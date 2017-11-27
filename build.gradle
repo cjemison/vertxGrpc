@@ -1,0 +1,68 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
+    }
+}
+
+group 'com.cjemison.protobuf'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'com.google.protobuf'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'build/generated/source/proto/main/grpc'
+            srcDirs 'build/generated/source/proto/main/java'
+        }
+    }
+}
+
+// Generate IntelliJ IDEA's .idea & .iml project files
+apply plugin: 'idea'
+
+// Provide convenience executables for trying out the examples.
+apply plugin: 'application'
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.4.0'
+    }
+    plugins {
+        grpc {
+            //artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+            //artifact = "io.vertx:protoc-gen-grpc-java:${grpcVersion}"
+            artifact = "io.vertx:protoc-gen-grpc-java:1.6.1"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
+}
+
+startScripts.enabled = false
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'io.vertx:vertx-core:3.5.0'
+    compile 'io.vertx:vertx-grpc:3.5.0'
+
+    compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    compile "ch.qos.logback:logback-core:${logbackVersion}"
+    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    compile "io.grpc:grpc-all:${grpcVersion}"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
